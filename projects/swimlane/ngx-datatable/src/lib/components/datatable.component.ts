@@ -1093,23 +1093,34 @@ export class DatatableComponent implements OnInit, OnDestroy, DoCheck, AfterView
       // before we splice, chk if we currently have all selected
       const first = this.bodyComponent.indexes.first;
       const last = this.bodyComponent.indexes.last;
-      const allSelected = this.selected.length === last - first;
+
+      let selectableRows = this._internalRows.slice(first, last);
+      if (this.displayCheck) {
+        selectableRows = selectableRows.filter(r => this.displayCheck(r));
+      }
+      const allSelected = this.selected.length === selectableRows.length;
 
       // remove all existing either way
       this.selected = [];
 
       // do the opposite here
       if (!allSelected) {
-        this.selected.push(...this._internalRows.slice(first, last));
+        this.selected.push(...selectableRows);
       }
     } else {
       // before we splice, chk if we currently have all selected
-      const allSelected = this.selected.length === this.rows.length;
+      let selectableRows = this.rows;
+      if (this.displayCheck) {
+        selectableRows = selectableRows.filter(r => this.displayCheck(r));
+      }
+      const allSelected = this.selected.length === selectableRows.length;
+
       // remove all existing either way
       this.selected = [];
+
       // do the opposite here
       if (!allSelected) {
-        this.selected.push(...this.rows);
+        this.selected.push(...selectableRows);
       }
     }
 
