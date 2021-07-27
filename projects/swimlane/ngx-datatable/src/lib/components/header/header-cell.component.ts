@@ -25,7 +25,12 @@ import { SortDirection } from '../../types/sort-direction.type';
       >
       </ng-template>
       <label *ngIf="isCheckboxable" class="datatable-checkbox">
-        <input type="checkbox" [checked]="allRowsSelected" (change)="select.emit(!allRowsSelected)" />
+        <input
+          type="checkbox"
+          [checked]="allRowsSelected"
+          (change)="select.emit(!allRowsSelected)"
+          [title]="allRowsSelected ? 'Deselect all selected rows' : 'Select all available rows'"
+        />
       </label>
       <span *ngIf="!column.headerTemplate" class="datatable-header-cell-wrapper">
         <span class="datatable-header-cell-label draggable" (click)="onSort()" [innerHTML]="name"> </span>

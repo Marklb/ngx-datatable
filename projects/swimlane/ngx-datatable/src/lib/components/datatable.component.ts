@@ -607,15 +607,22 @@ export class DatatableComponent implements OnInit, OnDestroy, DoCheck, AfterView
    * Returns if all rows are selected.
    */
   get allRowsSelected(): boolean {
-    let allRowsSelected = this.rows && this.selected && this.selected.length === this.rows.length;
+    let selectableRows = this.rows;
+
+    if (!selectableRows || selectableRows.length === 0 || !this.selected || this.selected.length === 0) {
+      return false;
+    }
 
     if (this.bodyComponent && this.selectAllRowsOnPage) {
       const indexes = this.bodyComponent.indexes;
-      const rowsOnPage = indexes.last - indexes.first;
-      allRowsSelected = this.selected.length === rowsOnPage;
+      selectableRows = selectableRows.slice(indexes.first, indexes.last);
     }
 
-    return this.selected && this.rows && this.rows.length !== 0 && allRowsSelected;
+    if (this.displayCheck) {
+      selectableRows = selectableRows.filter(r => this.displayCheck(r));
+    }
+
+    return this.selected.length === selectableRows.length;
   }
 
   element: HTMLElement;
