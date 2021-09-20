@@ -413,6 +413,16 @@ export class DatatableComponent implements OnInit, OnDestroy, DoCheck, AfterView
   @Input() summaryPosition: string = 'top';
 
   /**
+   * A flag to hide / show page count in footer
+   */
+  @Input() displayPageCount: boolean = true;
+
+  /**
+   * A flag to hide / show pager in footer
+   */
+  @Input() displayPager: boolean = true;
+
+  /**
    * Body was scrolled typically in a `scrollbarV:true` scenario.
    */
   @Output() scroll: EventEmitter<any> = new EventEmitter();

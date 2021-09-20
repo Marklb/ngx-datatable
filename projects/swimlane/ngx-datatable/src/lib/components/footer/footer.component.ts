@@ -8,6 +8,10 @@ import { DatatableFooterDirective } from './footer.directive';
       [ngClass]="{ 'selected-count': selectedMessage }"
       [style.height.px]="footerHeight"
     >
+      <div class="page-count" *ngIf="displayPageCount">
+        <span *ngIf="selectedMessage"> {{ selectedCount?.toLocaleString() }} {{ selectedMessage }} / </span>
+        {{ rowCount?.toLocaleString() }} {{ totalMessage }}
+      </div>
       <ng-template
         *ngIf="footerTemplate"
         [ngTemplateOutlet]="footerTemplate.template"
@@ -20,12 +24,8 @@ import { DatatableFooterDirective } from './footer.directive';
         }"
       >
       </ng-template>
-      <div class="page-count" *ngIf="!footerTemplate">
-        <span *ngIf="selectedMessage"> {{ selectedCount?.toLocaleString() }} {{ selectedMessage }} / </span>
-        {{ rowCount?.toLocaleString() }} {{ totalMessage }}
-      </div>
       <datatable-pager
-        *ngIf="!footerTemplate"
+        *ngIf="displayPager"
         [pagerLeftArrowIcon]="pagerLeftArrowIcon"
         [pagerRightArrowIcon]="pagerRightArrowIcon"
         [pagerPreviousIcon]="pagerPreviousIcon"
@@ -45,6 +45,8 @@ import { DatatableFooterDirective } from './footer.directive';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DataTableFooterComponent {
+  @Input() displayPageCount: boolean;
+  @Input() displayPager: boolean;
   @Input() footerHeight: number;
   @Input() rowCount: number;
   @Input() pageSize: number;

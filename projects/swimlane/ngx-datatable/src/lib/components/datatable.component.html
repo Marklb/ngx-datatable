@@ -76,6 +76,8 @@
     [selectedCount]="selected.length"
     [selectedMessage]="!!selectionType && messages.selectedMessage"
     [pagerNextIcon]="cssClasses.pagerNext"
+    [displayPageCount]="displayPageCount"
+    [displayPager]="displayPager"
     (page)="onFooterPage($event)"
   >
   </datatable-footer>
