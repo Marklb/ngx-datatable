@@ -159,11 +159,27 @@ describe('DataTableFooterComponent', () => {
   });
 
   describe('when there is a template', () => {
-    it('should not render div.page-count or DatatablePagerComponent', () => {
+    it('should render div.page-count or DatatablePagerComponent', () => {
       component.footerTemplate = { template: component.testTemplate };
       page.detectChangesAndRunQueries();
 
+      expect(page.pageCount).not.toBeNull();
+      expect(page.datatablePager).not.toBeNull();
+    });
+
+    it('should not render div.page-count if displayPageCount is false', () => {
+      component.footerTemplate = { template: component.testTemplate };
+      component.displayPageCount = false;
+      page.detectChangesAndRunQueries();
+
       expect(page.pageCount).toBeNull();
+    });
+
+    it('should not render DatatablePagerComponent if displayPager is false', () => {
+      component.footerTemplate = { template: component.testTemplate };
+      component.displayPager = false;
+      page.detectChangesAndRunQueries();
+
       expect(page.datatablePager).toBeNull();
     });
 
@@ -212,6 +228,8 @@ describe('DataTableFooterComponent', () => {
       [selectedCount]="selectedCount"
       [selectedMessage]="selectedMessage"
       [pagerNextIcon]="pagerNextIcon"
+      [displayPageCount]="displayPageCount"
+      [displayPager]="displayPager"
       (page)="onPageEvent($event)"
     >
     </datatable-footer>
@@ -247,6 +265,8 @@ class TestFixtureComponent {
   footerTemplate: { template: TemplateRef<any> };
   selectedCount: number;
   selectedMessage: string;
+  displayPageCount = true;
+  displayPager = true;
 
   /**
    * establishes a reference to a test template that can
