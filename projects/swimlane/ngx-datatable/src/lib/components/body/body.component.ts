@@ -119,30 +119,45 @@ import { translateXY } from '../../utils/translate';
   }
 })
 export class DataTableBodyComponent implements OnInit, OnDestroy {
-  @Input() scrollbarV: boolean;
-  @Input() scrollbarH: boolean;
-  @Input() loadingIndicator: boolean;
-  @Input() externalPaging: boolean;
-  @Input() rowHeight: number | 'auto' | ((row?: any) => number);
-  @Input() offsetX: number;
-  @Input() emptyMessage: string;
-  @Input() selectionType: SelectionType;
-  @Input() selected: any[] = [];
-  @Input() rowIdentity: any;
-  @Input() rowDetail: any;
-  @Input() groupHeader: any;
-  @Input() selectCheck: any;
-  @Input() displayCheck: any;
-  @Input() trackByProp: string;
-  @Input() rowClass: any;
-  @Input() groupedRows: any;
-  @Input() groupExpansionDefault: boolean;
-  @Input() innerWidth: number;
-  @Input() groupRowsBy: string;
-  @Input() virtualization: boolean;
-  @Input() summaryRow: boolean;
-  @Input() summaryPosition: string;
-  @Input() summaryHeight: number;
+  // tslint:disable: variable-name
+  static ngAcceptInputType_minWidth: string | number | null | undefined;
+  static ngAcceptInputType_maxWidth: string | number | null | undefined;
+  static ngAcceptInputType_scrollbarV: string | boolean | null | undefined;
+  static ngAcceptInputType_scrollbarH: string | boolean | null | undefined;
+  static ngAcceptInputType_loadingIndicator: string | boolean | null | undefined;
+  static ngAcceptInputType_externalPaging: string | boolean | null | undefined;
+  static ngAcceptInputType_offsetX: string | number | null | undefined;
+  static ngAcceptInputType_groupExpansionDefault: string | boolean | null | undefined;
+  static ngAcceptInputType_innerWidth: string | number | null | undefined;
+  static ngAcceptInputType_virtualization: string | boolean | null | undefined;
+  static ngAcceptInputType_summaryRow: string | boolean | null | undefined;
+  static ngAcceptInputType_summaryHeight: string | number | null | undefined;
+  // tslint:enable: variable-name
+
+  @Input() scrollbarV: boolean = false; // TODO: Coerce value.
+  @Input() scrollbarH: boolean = false; // TODO: Coerce value.
+  @Input() loadingIndicator: boolean = false; // TODO: Coerce value.
+  @Input() externalPaging: boolean = false; // TODO: Coerce value.
+  @Input() rowHeight: number | 'auto' | ((row?: any) => number) | null | undefined;
+  @Input() offsetX: number = 0; // TODO: Coerce value.
+  @Input() emptyMessage: string | null | undefined;
+  @Input() selectionType: SelectionType | null | undefined; // TODO: Coerce value.
+  @Input() selected: any[] | null | undefined = []; // TODO: Coerce value.
+  @Input() rowIdentity: any | null | undefined; // TODO: Coerce value.
+  @Input() rowDetail: any | null | undefined;
+  @Input() groupHeader: any | null | undefined;
+  @Input() selectCheck: any | null | undefined;
+  @Input() displayCheck: any | null | undefined;
+  @Input() trackByProp: string | null | undefined;
+  @Input() rowClass: any | null | undefined;
+  @Input() groupedRows: any | null | undefined;
+  @Input() groupExpansionDefault: boolean = false;
+  @Input() innerWidth: number = 0; // TODO: Coerce value.
+  @Input() groupRowsBy: string | null | undefined;
+  @Input() virtualization: boolean = false; // TODO: Coerce value.
+  @Input() summaryRow: boolean = false; // TODO: Coerce value.
+  @Input() summaryPosition: string | null | undefined;
+  @Input() summaryHeight: number | null | undefined; // TODO: Coerce value.
 
   @Input() set pageSize(val: number) {
     this._pageSize = val;
@@ -223,7 +238,7 @@ export class DataTableBodyComponent implements OnInit, OnDestroy {
   @Output() rowContextmenu = new EventEmitter<{ event: MouseEvent; row: any }>(false);
   @Output() treeAction: EventEmitter<any> = new EventEmitter();
 
-  @ViewChild(ScrollerComponent) scroller: ScrollerComponent;
+  @ViewChild(ScrollerComponent) scroller: ScrollerComponent | null | undefined;
 
   /**
    * Returns if selection is enabled.
@@ -256,12 +271,12 @@ export class DataTableBodyComponent implements OnInit, OnDestroy {
   rowIndexes: any = new WeakMap<any, string>();
   rowExpansions: any[] = [];
 
-  _rows: any[];
+  _rows: any[] = [];
   _bodyHeight: any;
-  _columns: any[];
-  _rowCount: number;
-  _offset: number;
-  _pageSize: number;
+  _columns: any[] = [];
+  _rowCount: number = 0;
+  _offset: number = 0;
+  _pageSize: number = 0;
 
   /**
    * Creates an instance of DataTableBodyComponent.

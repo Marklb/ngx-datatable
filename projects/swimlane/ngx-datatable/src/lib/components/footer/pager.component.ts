@@ -43,10 +43,10 @@ import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy } from 
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DataTablePagerComponent {
-  @Input() pagerLeftArrowIcon: string;
-  @Input() pagerRightArrowIcon: string;
-  @Input() pagerPreviousIcon: string;
-  @Input() pagerNextIcon: string;
+  @Input() pagerLeftArrowIcon: string | null | undefined;
+  @Input() pagerRightArrowIcon: string | null | undefined;
+  @Input() pagerPreviousIcon: string | null | undefined;
+  @Input() pagerNextIcon: string | null | undefined;
 
   @Input()
   set size(val: number) {

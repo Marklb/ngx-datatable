@@ -43,13 +43,18 @@ import {
   }
 })
 export class DataTableRowWrapperComponent implements DoCheck {
-  @Input() innerWidth: number;
-  @Input() rowDetail: any;
-  @Input() groupHeader: any;
-  @Input() offsetX: number;
-  @Input() detailRowHeight: any;
-  @Input() row: any;
-  @Input() groupedRows: any;
+  // tslint:disable: variable-name
+  static ngAcceptInputType_innerWidth: string | number | null | undefined;
+  static ngAcceptInputType_offsetX: string | number | null | undefined;
+  // tslint:enable: variable-name
+
+  @Input() innerWidth: number = 0; // TODO: Coerce value.
+  @Input() rowDetail: any; // TODO: Fix type.
+  @Input() groupHeader: any; // TODO: Fix type.
+  @Input() offsetX: number = 0; // TODO: Coerce value.
+  @Input() detailRowHeight: any; // TODO: Fix type.
+  @Input() row: any; // TODO: Fix type.
+  @Input() groupedRows: any; // TODO: Fix type.
   @Output() rowContextmenu = new EventEmitter<{ event: MouseEvent; row: any }>(false);
 
   @Input() set rowIndex(val: number) {
@@ -75,12 +80,14 @@ export class DataTableRowWrapperComponent implements DoCheck {
   }
 
   groupContext: any = {
+    // @ts-ignore
     group: this.row,
     expanded: this.expanded,
     rowIndex: this.rowIndex
   };
 
   rowContext: any = {
+    // @ts-ignore
     row: this.row,
     expanded: this.expanded,
     rowIndex: this.rowIndex
@@ -88,7 +95,7 @@ export class DataTableRowWrapperComponent implements DoCheck {
 
   private rowDiffer: KeyValueDiffer<{}, {}>;
   private _expanded: boolean = false;
-  private _rowIndex: number;
+  private _rowIndex: number = 0;
 
   constructor(private cd: ChangeDetectorRef, private differs: KeyValueDiffers) {
     this.rowDiffer = differs.find({}).create();
@@ -108,7 +115,7 @@ export class DataTableRowWrapperComponent implements DoCheck {
   }
 
   getGroupHeaderStyle(): any {
-    const styles = {};
+    const styles: any = {};
 
     styles['transform'] = 'translate3d(' + this.offsetX + 'px, 0px, 0px)';
     styles['backface-visibility'] = 'hidden';

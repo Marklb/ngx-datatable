@@ -27,7 +27,7 @@ export function setColumnDefaults(columns: TableColumn[]) {
     }
 
     if (!column.$$valueGetter) {
-      column.$$valueGetter = getterForProp(column.prop);
+      column.$$valueGetter = getterForProp(column.prop!); // TODO: Fix type.
     }
 
     // format props if no name passed
@@ -89,6 +89,7 @@ export function translateTemplates(templates: DataTableColumnDirective[]): any[]
 
     const props = Object.getOwnPropertyNames(temp);
     for (const prop of props) {
+      // @ts-ignore
       col[prop] = temp[prop];
     }
 

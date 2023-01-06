@@ -2,8 +2,12 @@ import { getterForProp } from './column-prop-getters';
 import { TableColumnProp } from '../types/table-column.type';
 
 export type OptionalValueGetter = (row: any) => any | undefined;
-export function optionalGetterForProp(prop: TableColumnProp): OptionalValueGetter {
-  return prop && (row => getterForProp(prop)(row, prop));
+export function optionalGetterForProp(prop: TableColumnProp | null | undefined): OptionalValueGetter | undefined {
+  if (prop === undefined || prop === null) {
+    return undefined;
+  }
+
+  return row => getterForProp(prop)(row, prop);
 }
 
 /**
@@ -44,7 +48,7 @@ export function optionalGetterForProp(prop: TableColumnProp): OptionalValueGette
  */
 export function groupRowsByParents(rows: any[], from?: OptionalValueGetter, to?: OptionalValueGetter): any[] {
   if (from && to) {
-    const nodeById = {};
+    const nodeById: any = {};
     const l = rows.length;
     let node: TreeNode | null = null;
 
@@ -66,18 +70,21 @@ export function groupRowsByParents(rows: any[], from?: OptionalValueGetter, to?:
     for (let i = 0; i < l; i++) {
       // link all TreeNode objects
       node = nodeById[to(rows[i])];
-      let parent = 0;
-      const fromValue = from(node.row);
-      if (!!fromValue && uniqIDs.indexOf(fromValue) > -1) {
-        parent = fromValue;
+      if (node) {
+        let parent = 0;
+        const fromValue = from(node.row);
+        if (!!fromValue && uniqIDs.indexOf(fromValue) > -1) {
+          parent = fromValue;
+        }
+        node.parent = nodeById[parent];
+        node.row['level'] = node.parent.row['level'] + 1;
+        node.parent.children.push(node);
       }
-      node.parent = nodeById[parent];
-      node.row['level'] = node.parent.row['level'] + 1;
-      node.parent.children.push(node);
     }
 
     let resolvedRows: any[] = [];
     nodeById[0].flatten(function () {
+      // @ts-ignore
       resolvedRows = [...resolvedRows, this.row];
     }, true);
 

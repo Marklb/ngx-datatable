@@ -32,12 +32,12 @@ import { SortDirection } from '../../types/sort-direction.type';
           [title]="allRowsSelected ? 'Deselect all selected rows' : 'Select all available rows'"
         />
       </label>
-      <span *ngIf="!column.headerTemplate" class="datatable-header-cell-wrapper">
+      <span *ngIf="!column?.headerTemplate" class="datatable-header-cell-wrapper">
         <span class="datatable-header-cell-label draggable" (click)="onSort()" [innerHTML]="name"> </span>
       </span>
       <ng-template
-        *ngIf="column.headerTemplate"
-        [ngTemplateOutlet]="column.headerTemplate"
+        *ngIf="column?.headerTemplate"
+        [ngTemplateOutlet]="column?.headerTemplate"
         [ngTemplateOutletContext]="cellContext"
       >
       </ng-template>
@@ -50,16 +50,21 @@ import { SortDirection } from '../../types/sort-direction.type';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DataTableHeaderCellComponent {
-  @Input() sortType: SortType;
-  @Input() sortAscendingIcon: string;
-  @Input() sortDescendingIcon: string;
-  @Input() sortUnsetIcon: string;
+  // tslint:disable: variable-name
+  static ngAcceptInputType_isTarget: string | boolean | null | undefined;
+  static ngAcceptInputType_selectionType: string | SelectionType | null | undefined;
+  // tslint:enable: variable-name
 
-  @Input() isTarget: boolean;
+  @Input() sortType: SortType | null | undefined;
+  @Input() sortAscendingIcon: string | null | undefined;
+  @Input() sortDescendingIcon: string | null | undefined;
+  @Input() sortUnsetIcon: string | null | undefined;
+
+  @Input() isTarget: boolean = false; // TODO: Coerce value.
   @Input() targetMarkerTemplate: any;
   @Input() targetMarkerContext: any;
 
-  _allRowsSelected: boolean;
+  _allRowsSelected: boolean = false;
 
   @Input() set allRowsSelected(value) {
     this._allRowsSelected = value;
@@ -69,21 +74,21 @@ export class DataTableHeaderCellComponent {
     return this._allRowsSelected;
   }
 
-  @Input() selectionType: SelectionType;
+  @Input() selectionType: SelectionType = SelectionType.single; // TODO: coerce value.
 
-  @Input() set column(column: TableColumn) {
+  @Input() set column(column: TableColumn | null | undefined) {
     this._column = column;
     this.cellContext.column = column;
     this.cd.markForCheck();
   }
 
-  get column(): TableColumn {
+  get column(): TableColumn | null | undefined {
     return this._column;
   }
 
   @HostBinding('style.height.px')
   @Input()
-  headerHeight: number;
+  headerHeight: number | null | undefined;
 
   @Input() set sorts(val: any[]) {
     this._sorts = val;
@@ -105,22 +110,24 @@ export class DataTableHeaderCellComponent {
   get columnCssClasses(): any {
     let cls = 'datatable-header-cell';
 
-    if (this.column.sortable) cls += ' sortable';
-    if (this.column.resizeable) cls += ' resizeable';
-    if (this.column.headerClass) {
-      if (typeof this.column.headerClass === 'string') {
-        cls += ' ' + this.column.headerClass;
-      } else if (typeof this.column.headerClass === 'function') {
-        const res = this.column.headerClass({
-          column: this.column
-        });
+    if (this.column) {
+      if (this.column.sortable) cls += ' sortable';
+      if (this.column.resizeable) cls += ' resizeable';
+      if (this.column.headerClass) {
+        if (typeof this.column.headerClass === 'string') {
+          cls += ' ' + this.column.headerClass;
+        } else if (typeof this.column.headerClass === 'function') {
+          const res = this.column.headerClass({
+            column: this.column
+          });
 
-        if (typeof res === 'string') {
-          cls += res;
-        } else if (typeof res === 'object') {
-          const keys = Object.keys(res);
-          for (const k of keys) {
-            if (res[k] === true) cls += ` ${k}`;
+          if (typeof res === 'string') {
+            cls += res;
+          } else if (typeof res === 'object') {
+            const keys = Object.keys(res);
+            for (const k of keys) {
+              if (res[k] === true) cls += ` ${k}`;
+            }
           }
         }
       }
@@ -135,33 +142,36 @@ export class DataTableHeaderCellComponent {
   }
 
   @HostBinding('attr.title')
-  get name(): string {
+  get name(): string | null | undefined {
     // guaranteed to have a value by setColumnDefaults() in column-helper.ts
-    return this.column.headerTemplate === undefined ? this.column.name : undefined;
+    return this.column?.headerTemplate === undefined ? this.column?.name : undefined;
   }
 
   @HostBinding('style.minWidth.px')
-  get minWidth(): number {
-    return this.column.minWidth;
+  get minWidth(): number | null | undefined {
+    return this.column?.minWidth;
   }
 
   @HostBinding('style.maxWidth.px')
-  get maxWidth(): number {
-    return this.column.maxWidth;
+  get maxWidth(): number | null | undefined {
+    return this.column?.maxWidth;
   }
 
   @HostBinding('style.width.px')
-  get width(): number {
-    return this.column.width;
+  get width(): number | null | undefined {
+    return this.column?.width;
   }
 
   get isCheckboxable(): boolean {
-    return this.column.checkboxable && this.column.headerCheckboxable && this.selectionType === SelectionType.checkbox;
+    return (
+      (this.column?.checkboxable && this.column?.headerCheckboxable && this.selectionType === SelectionType.checkbox) ??
+      false
+    );
   }
 
   sortFn = this.onSort.bind(this);
-  sortClass: string;
-  sortDir: SortDirection;
+  sortClass: string | null | undefined;
+  sortDir: SortDirection | null | undefined = undefined;
   selectFn = this.select.emit.bind(this.select);
 
   cellContext: any = {
@@ -172,8 +182,8 @@ export class DataTableHeaderCellComponent {
     selectFn: this.selectFn
   };
 
-  private _column: TableColumn;
-  private _sorts: any[];
+  private _column: TableColumn | null | undefined;
+  private _sorts: any[] = [];
 
   constructor(private cd: ChangeDetectorRef) {}
 
@@ -189,7 +199,7 @@ export class DataTableHeaderCellComponent {
   calcSortDir(sorts: any[]): any {
     if (sorts && this.column) {
       const sort = sorts.find((s: any) => {
-        return s.prop === this.column.prop;
+        return s.prop === this.column?.prop;
       });
 
       if (sort) return sort.dir;
@@ -197,7 +207,7 @@ export class DataTableHeaderCellComponent {
   }
 
   onSort(): void {
-    if (!this.column.sortable) return;
+    if (!this.column?.sortable) return;
 
     const newValue = nextSortDir(this.sortType, this.sortDir);
     this.sort.emit({
@@ -207,7 +217,8 @@ export class DataTableHeaderCellComponent {
     });
   }
 
-  calcSortClass(sortDir: SortDirection): string {
+  calcSortClass(sortDir: SortDirection | null | undefined): string | undefined {
+    // @ts-ignore
     if (!this.cellContext.column.sortable) return;
     if (sortDir === SortDirection.asc) {
       return `sort-btn sort-asc ${this.sortAscendingIcon}`;

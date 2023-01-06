@@ -1,25 +1,29 @@
 import { Directive, Input, Output, EventEmitter, HostBinding, HostListener, OnDestroy } from '@angular/core';
-import { Observable, Subscription, fromEvent } from 'rxjs';
+import { Subscription, fromEvent } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { MouseEvent } from '../events';
 
 @Directive({ selector: '[long-press]' })
 export class LongPressDirective implements OnDestroy {
+  // tslint:disable: variable-name
+  static ngAcceptInputType_pressEnabled: string | boolean | null | undefined;
+  static ngAcceptInputType_duration: string | number | null | undefined;
+  // tslint:enable: variable-name
+
   @Input() pressEnabled: boolean = true;
-  @Input() pressModel: any;
+  @Input() pressModel: any; // TODO: Fix type.
   @Input() duration: number = 500;
 
   @Output() longPressStart: EventEmitter<any> = new EventEmitter();
   @Output() longPressing: EventEmitter<any> = new EventEmitter();
   @Output() longPressEnd: EventEmitter<any> = new EventEmitter();
 
-  pressing: boolean;
-  isLongPressing: boolean;
+  pressing: boolean = false;
+  isLongPressing: boolean = false;
   timeout: any;
   mouseX: number = 0;
   mouseY: number = 0;
 
-  subscription: Subscription;
+  subscription?: Subscription;
 
   @HostBinding('class.press')
   get press(): boolean {
@@ -46,7 +50,7 @@ export class LongPressDirective implements OnDestroy {
     this.pressing = true;
     this.isLongPressing = false;
 
-    const mouseup = fromEvent(document, 'mouseup');
+    const mouseup = fromEvent<MouseEvent>(document, 'mouseup');
     this.subscription = mouseup.subscribe((ev: MouseEvent) => this.onMouseup());
 
     this.timeout = setTimeout(() => {
@@ -57,7 +61,7 @@ export class LongPressDirective implements OnDestroy {
       });
 
       this.subscription.add(
-        fromEvent(document, 'mousemove')
+        fromEvent<MouseEvent>(document, 'mousemove')
           .pipe(takeUntil(mouseup))
           .subscribe((mouseEvent: MouseEvent) => this.onMouseMove(mouseEvent))
       );

@@ -18,11 +18,11 @@ export class OrderableDirective implements AfterContentInit, OnDestroy {
   @Output() targetChanged: EventEmitter<any> = new EventEmitter();
 
   @ContentChildren(DraggableDirective, { descendants: true })
-  draggables: QueryList<DraggableDirective>;
+  draggables?: QueryList<DraggableDirective>;
 
   positions: any;
   differ: any;
-  lastDraggingIndex: number;
+  lastDraggingIndex?: number;
 
   constructor(differs: KeyValueDiffers, @Inject(DOCUMENT) private document: any) {
     this.differ = differs.find({}).create();
@@ -31,11 +31,11 @@ export class OrderableDirective implements AfterContentInit, OnDestroy {
   ngAfterContentInit(): void {
     // HACK: Investigate Better Way
     this.updateSubscriptions();
-    this.draggables.changes.subscribe(this.updateSubscriptions.bind(this));
+    this.draggables?.changes.subscribe(this.updateSubscriptions.bind(this));
   }
 
   ngOnDestroy(): void {
-    this.draggables.forEach(d => {
+    this.draggables?.forEach(d => {
       d.dragStart.unsubscribe();
       d.dragging.unsubscribe();
       d.dragEnd.unsubscribe();
@@ -74,7 +74,7 @@ export class OrderableDirective implements AfterContentInit, OnDestroy {
     this.positions = {};
 
     let i = 0;
-    for (const dragger of this.draggables.toArray()) {
+    for (const dragger of this.draggables?.toArray()) {
       const elm = dragger.element;
       const left = parseInt(elm.offsetLeft.toString(), 0);
       this.positions[dragger.dragModel.prop] = {
@@ -147,7 +147,9 @@ export class OrderableDirective implements AfterContentInit, OnDestroy {
   }
 
   private createMapDiffs(): { [key: string]: DraggableDirective } {
-    return this.draggables.toArray().reduce((acc, curr) => {
+    return (this.draggables?.toArray() ?? []).reduce((acc, curr) => {
+      // TODO: Fix dragModel types.
+      // @ts-ignore
       acc[curr.dragModel.$$id] = curr;
       return acc;
     }, {});

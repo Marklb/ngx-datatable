@@ -52,13 +52,14 @@ export function throttleable(duration: number, options?: any) {
     return {
       configurable: true,
       enumerable: descriptor.enumerable,
-      get: function getter() {
+      get: function getter(): any {
         Object.defineProperty(this, key, {
           configurable: true,
           enumerable: descriptor.enumerable,
           value: throttle(descriptor.value, duration, options)
         });
 
+        // @ts-ignore
         return this[key];
       }
     };

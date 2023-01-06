@@ -13,7 +13,7 @@ import {
 } from '@angular/core';
 
 import { MouseEvent } from '../../events';
-import { ScrollbarHelper } from '../../services/scrollbar-helper.service'
+import { ScrollbarHelper } from '../../services/scrollbar-helper.service';
 
 @Component({
   selector: 'datatable-scroller',
@@ -24,16 +24,21 @@ import { ScrollbarHelper } from '../../services/scrollbar-helper.service'
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ScrollerComponent implements OnInit, OnDestroy {
-  @Input() scrollbarV: boolean = false;
-  @Input() scrollbarH: boolean = false;
+  // tslint:disable: variable-name
+  static ngAcceptInputType_scrollbarV: string | boolean | null | undefined;
+  static ngAcceptInputType_scrollbarH: string | boolean | null | undefined;
+  // tslint:enable: variable-name
+
+  @Input() scrollbarV: boolean = false; // TODO: Coerce value.
+  @Input() scrollbarH: boolean = false; // TODO: Coerce value.
 
   @HostBinding('style.height.px')
   @Input()
-  scrollHeight: number;
+  scrollHeight: number | null | undefined;
 
   @HostBinding('style.width.px')
   @Input()
-  scrollWidth: number;
+  scrollWidth: number | null | undefined;
 
   @Output() scroll: EventEmitter<any> = new EventEmitter();
 
@@ -93,6 +98,7 @@ export class ScrollerComponent implements OnInit, OnDestroy {
     }
 
     this.scroll.emit({
+      // @ts-ignore
       direction,
       scrollYPos: this.scrollYPos,
       scrollXPos: this.scrollXPos

@@ -3,6 +3,7 @@
 export const addMatchers = () =>
   jasmine.addMatchers({
     toHaveText,
+    // @ts-ignore
     toHaveCssClass
   });
 
@@ -49,6 +50,7 @@ function elementText(n: any): string {
 /**
  * adapted from https://github.com/ng-bootstrap/ng-bootstrap/blob/master/src/test/matchers.ts
  */
+// @ts-ignore
 function toHaveCssClass(util, customEqualityTests) {
   return { compare: buildError(false), negativeCompare: buildError(true) };
 

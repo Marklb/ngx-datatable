@@ -32,9 +32,11 @@ import { groupRowsByParents, optionalGetterForProp } from '../utils/tree';
 import { TableColumn } from '../types/table-column.type';
 import { setColumnDefaults, translateTemplates } from '../utils/column-helper';
 import { ColumnMode } from '../types/column-mode.type';
+import { RowHeight } from '../types/row-height.type';
 import { SelectionType } from '../types/selection.type';
 import { SortType } from '../types/sort.type';
 import { ContextmenuType } from '../types/contextmenu.type';
+import { DisplayCheckFn } from '../types/display-check-fn.type';
 import { DataTableColumnDirective } from './columns/column.directive';
 import { DatatableRowDetailDirective } from './row-detail/row-detail.directive';
 import { DatatableFooterDirective } from './footer/footer.directive';
@@ -58,10 +60,38 @@ import { sortRows } from '../utils/sort';
   }
 })
 export class DatatableComponent implements OnInit, OnDestroy, DoCheck, AfterViewInit {
+  // tslint:disable: variable-name
+  static ngAcceptInputType_columns: TableColumn[] | null | undefined;
+  static ngAcceptInputType_selected: any[] | null | undefined;
+  static ngAcceptInputType_scrollbarV: string | boolean | null | undefined;
+  static ngAcceptInputType_scrollbarH: string | boolean | null | undefined;
+  static ngAcceptInputType_headerHeight: string | number | null | undefined;
+  static ngAcceptInputType_footerHeight: string | number | null | undefined;
+  static ngAcceptInputType_externalPaging: string | boolean | null | undefined;
+  static ngAcceptInputType_externalSorting: string | boolean | null | undefined;
+  static ngAcceptInputType_limit: string | number | null | undefined;
+  static ngAcceptInputType_count: string | number | null | undefined;
+  static ngAcceptInputType_offset: string | number | null | undefined;
+  static ngAcceptInputType_loadingIndicator: string | boolean | null | undefined;
+  static ngAcceptInputType_selectionType: string | boolean | null | undefined;
+  static ngAcceptInputType_reorderable: string | boolean | null | undefined;
+  static ngAcceptInputType_swapColumns: string | boolean | null | undefined;
+  static ngAcceptInputType_groupExpansionDefault: string | boolean | null | undefined;
+  static ngAcceptInputType_selectAllRowsOnPage: string | boolean | null | undefined;
+  static ngAcceptInputType_virtualization: string | boolean | null | undefined;
+  static ngAcceptInputType_treeFromRelation: string | boolean | null | undefined;
+  static ngAcceptInputType_treeToRelation: string | boolean | null | undefined;
+  static ngAcceptInputType_summaryRow: string | boolean | null | undefined;
+  static ngAcceptInputType_summaryHeight: string | number | null | undefined;
+  static ngAcceptInputType_summaryPosition: string | boolean | null | undefined;
+  static ngAcceptInputType_displayPageCount: string | boolean | null | undefined;
+  static ngAcceptInputType_displayPager: string | boolean | null | undefined;
+  // tslint:enable: variable-name
+
   /**
    * Template for the target marker of drag target columns.
    */
-  @Input() targetMarkerTemplate: any;
+  @Input() targetMarkerTemplate: any | null | undefined; // TODO: Fix type.
 
   /**
    * Rows that are displayed in the table.
@@ -106,7 +136,7 @@ export class DatatableComponent implements OnInit, OnDestroy, DoCheck, AfterView
   /**
    * This attribute allows the user to set the name of the column to group the data with
    */
-  @Input() set groupRowsBy(val: string) {
+  @Input() set groupRowsBy(val: string | null | undefined) {
     if (val) {
       this._groupRowsBy = val;
       if (this._rows && this._groupRowsBy) {
@@ -135,7 +165,7 @@ export class DatatableComponent implements OnInit, OnDestroy, DoCheck, AfterView
    *    ]}
    *  ]
    */
-  @Input() groupedRows: any[];
+  @Input() groupedRows: any[] | null | undefined;
 
   /**
    * Columns to be displayed.
@@ -167,54 +197,55 @@ export class DatatableComponent implements OnInit, OnDestroy, DoCheck, AfterView
   /**
    * Enable vertical scrollbars
    */
-  @Input() scrollbarV: boolean = false;
+  @Input() scrollbarV: boolean = false; // TODO: Coerce input.
 
   /**
    * Enable horz scrollbars
    */
-  @Input() scrollbarH: boolean = false;
+  @Input() scrollbarH: boolean = false; // TODO: Coerce input.
 
   /**
    * The row height; which is necessary
    * to calculate the height for the lazy rendering.
    */
-  @Input() rowHeight: number | 'auto' | ((row?: any) => number) = 30;
+  @Input() rowHeight: RowHeight | null | undefined = 30; // TODO: Coerce input.
 
   /**
    * Type of column width distribution formula.
    * Example: flex, force, standard
    */
-  @Input() columnMode: ColumnMode | keyof typeof ColumnMode = ColumnMode.standard;
+  @Input() columnMode: ColumnMode | keyof typeof ColumnMode | null | undefined = ColumnMode.standard; // TODO: Coerce input.
 
   /**
    * The minimum header height in pixels.
    * Pass a falsey for no header
    */
-  @Input() headerHeight: number = 30;
+  @Input() headerHeight: number = 30; // TODO: Coerce input.
 
   /**
    * The minimum footer height in pixels.
    * Pass falsey for no footer
    */
-  @Input() footerHeight: number = 0;
+  @Input() footerHeight: number = 0; // TODO: Coerce input.
 
   /**
    * If the table should use external paging
    * otherwise its assumed that all data is preloaded.
    */
-  @Input() externalPaging: boolean = false;
+  @Input() externalPaging: boolean = false; // TODO: Coerce input.
 
   /**
    * If the table should use external sorting or
    * the built-in basic sorting.
    */
-  @Input() externalSorting: boolean = false;
+  @Input() externalSorting: boolean = false; // TODO: Coerce input.
 
   /**
    * The page size to be shown.
    * Default value: `undefined`
    */
   @Input() set limit(val: number | undefined) {
+    // TODO: Coerce input.
     this._limit = val;
 
     // recalculate sizes/etc
@@ -233,6 +264,7 @@ export class DatatableComponent implements OnInit, OnDestroy, DoCheck, AfterView
    * Default value: `0`
    */
   @Input() set count(val: number) {
+    // TODO: Coerce input.
     this._count = val;
 
     // recalculate sizes/etc
@@ -251,6 +283,7 @@ export class DatatableComponent implements OnInit, OnDestroy, DoCheck, AfterView
    * Default value: `0`
    */
   @Input() set offset(val: number) {
+    // TODO: Coerce input.
     this._offset = val;
   }
   get offset(): number {
@@ -261,7 +294,7 @@ export class DatatableComponent implements OnInit, OnDestroy, DoCheck, AfterView
    * Show the linear loading bar.
    * Default value: `false`
    */
-  @Input() loadingIndicator: boolean = false;
+  @Input() loadingIndicator: boolean = false; // TODO: Coerce input.
 
   /**
    * Type of row selection. Options are:
@@ -275,30 +308,30 @@ export class DatatableComponent implements OnInit, OnDestroy, DoCheck, AfterView
    * For no selection pass a `falsey`.
    * Default value: `undefined`
    */
-  @Input() selectionType: SelectionType;
+  @Input() selectionType: SelectionType | undefined; // TODO: Coerce input.
 
   /**
    * Enable/Disable ability to re-order columns
    * by dragging them.
    */
-  @Input() reorderable: boolean = true;
+  @Input() reorderable: boolean = true; // TODO: Coerce input.
 
   /**
    * Swap columns on re-order columns or
    * move them.
    */
-  @Input() swapColumns: boolean = true;
+  @Input() swapColumns: boolean = true; // TODO: Coerce input.
 
   /**
    * The type of sorting
    */
-  @Input() sortType: SortType = SortType.single;
+  @Input() sortType: SortType = SortType.single; // TODO: Coerce input.
 
   /**
    * Array of sorted columns by property and type.
    * Default value: `[]`
    */
-  @Input() sorts: any[] = [];
+  @Input() sorts: any[] = []; // TODO: Coerce input.
 
   /**
    * Css class overrides
@@ -349,7 +382,7 @@ export class DatatableComponent implements OnInit, OnDestroy, DoCheck, AfterView
    *      return selection !== 'Ethel Price';
    *    }
    */
-  @Input() selectCheck: any;
+  @Input() selectCheck: any; // TODO: Fix type.
 
   /**
    * A function you can use to check whether you want
@@ -359,20 +392,20 @@ export class DatatableComponent implements OnInit, OnDestroy, DoCheck, AfterView
    *      return row.name !== 'Ethel Price';
    *    }
    */
-  @Input() displayCheck: (row: any, column?: any, value?: any) => boolean;
+  @Input() displayCheck: DisplayCheckFn | null | undefined;
 
   /**
    * A boolean you can use to set the detault behaviour of rows and groups
    * whether they will start expanded or not. If ommited the default is NOT expanded.
    *
    */
-  @Input() groupExpansionDefault: boolean = false;
+  @Input() groupExpansionDefault: boolean = false; // TODO: Coerce input.
 
   /**
    * Property to which you can use for custom tracking of rows.
    * Example: 'name'
    */
-  @Input() trackByProp: string;
+  @Input() trackByProp: string | null | undefined;
 
   /**
    * Property to which you can use for determining select all
@@ -380,47 +413,47 @@ export class DatatableComponent implements OnInit, OnDestroy, DoCheck, AfterView
    *
    * @memberOf DatatableComponent
    */
-  @Input() selectAllRowsOnPage = false;
+  @Input() selectAllRowsOnPage: boolean = false; // TODO: Coerce input.
 
   /**
    * A flag for row virtualization on / off
    */
-  @Input() virtualization: boolean = true;
+  @Input() virtualization: boolean = true; // TODO: Coerce input.
 
   /**
    * Tree from relation
    */
-  @Input() treeFromRelation: string;
+  @Input() treeFromRelation: string | null | undefined; // TODO: Coerce input.
 
   /**
    * Tree to relation
    */
-  @Input() treeToRelation: string;
+  @Input() treeToRelation: string | null | undefined; // TODO: Coerce input.
 
   /**
    * A flag for switching summary row on / off
    */
-  @Input() summaryRow: boolean = false;
+  @Input() summaryRow: boolean = false; // TODO: Coerce input.
 
   /**
    * A height of summary row
    */
-  @Input() summaryHeight: number = 30;
+  @Input() summaryHeight: number = 30; // TODO: Coerce input.
 
   /**
    * A property holds a summary row position: top/bottom
    */
-  @Input() summaryPosition: string = 'top';
+  @Input() summaryPosition: string = 'top'; // TODO: Coerce input.
 
   /**
    * A flag to hide / show page count in footer
    */
-  @Input() displayPageCount: boolean = true;
+  @Input() displayPageCount: boolean = true; // TODO: Coerce input.
 
   /**
    * A flag to hide / show pager in footer
    */
-  @Input() displayPager: boolean = true;
+  @Input() displayPager: boolean = true; // TODO: Coerce input.
 
   /**
    * Body was scrolled typically in a `scrollbarV:true` scenario.
@@ -567,7 +600,7 @@ export class DatatableComponent implements OnInit, OnDestroy, DoCheck, AfterView
    * if described in your markup.
    */
   @ContentChildren(DataTableColumnDirective)
-  set columnTemplates(val: QueryList<DataTableColumnDirective>) {
+  set columnTemplates(val: QueryList<DataTableColumnDirective> | undefined) {
     this._columnTemplates = val;
     this.translateColumns(val);
   }
@@ -575,7 +608,7 @@ export class DatatableComponent implements OnInit, OnDestroy, DoCheck, AfterView
   /**
    * Returns the column templates.
    */
-  get columnTemplates(): QueryList<DataTableColumnDirective> {
+  get columnTemplates(): QueryList<DataTableColumnDirective> | undefined {
     return this._columnTemplates;
   }
 
@@ -583,26 +616,26 @@ export class DatatableComponent implements OnInit, OnDestroy, DoCheck, AfterView
    * Row Detail templates gathered from the ContentChild
    */
   @ContentChild(DatatableRowDetailDirective)
-  rowDetail: DatatableRowDetailDirective;
+  rowDetail?: DatatableRowDetailDirective;
 
   /**
    * Group Header templates gathered from the ContentChild
    */
   @ContentChild(DatatableGroupHeaderDirective)
-  groupHeader: DatatableGroupHeaderDirective;
+  groupHeader?: DatatableGroupHeaderDirective;
 
   /**
    * Footer template gathered from the ContentChild
    */
   @ContentChild(DatatableFooterDirective)
-  footer: DatatableFooterDirective;
+  footer?: DatatableFooterDirective;
 
   /**
    * Reference to the body component for manually
    * invoking functions on the body.
    */
   @ViewChild(DataTableBodyComponent)
-  bodyComponent: DataTableBodyComponent;
+  bodyComponent?: DataTableBodyComponent;
 
   /**
    * Reference to the header component for manually
@@ -611,7 +644,7 @@ export class DatatableComponent implements OnInit, OnDestroy, DoCheck, AfterView
    * @memberOf DatatableComponent
    */
   @ViewChild(DataTableHeaderComponent)
-  headerComponent: DataTableHeaderComponent;
+  headerComponent?: DataTableHeaderComponent;
 
   /**
    * Returns if all rows are selected.
@@ -636,9 +669,9 @@ export class DatatableComponent implements OnInit, OnDestroy, DoCheck, AfterView
   }
 
   element: HTMLElement;
-  _innerWidth: number;
-  pageSize: number;
-  bodyHeight: number;
+  _innerWidth: number = 0;
+  pageSize: number = 0;
+  bodyHeight: number = 0;
   rowCount: number = 0;
   rowDiffer: KeyValueDiffer<{}, {}>;
 
@@ -646,12 +679,12 @@ export class DatatableComponent implements OnInit, OnDestroy, DoCheck, AfterView
   _limit: number | undefined;
   _count: number = 0;
   _offset: number = 0;
-  _rows: any[];
-  _groupRowsBy: string;
-  _internalRows: any[];
-  _internalColumns: TableColumn[];
-  _columns: TableColumn[];
-  _columnTemplates: QueryList<DataTableColumnDirective>;
+  _rows: any[] = [];
+  _groupRowsBy: string | null | undefined;
+  _internalRows: any[] = [];
+  _internalColumns: TableColumn[] = [];
+  _columns: TableColumn[] = [];
+  _columnTemplates?: QueryList<DataTableColumnDirective>;
   _subscriptions: Subscription[] = [];
 
   constructor(
@@ -719,7 +752,7 @@ export class DatatableComponent implements OnInit, OnDestroy, DoCheck, AfterView
    * content has been fully initialized.
    */
   ngAfterContentInit() {
-    this.columnTemplates.changes.subscribe(v => this.translateColumns(v));
+    this.columnTemplates?.changes.subscribe(v => this.translateColumns(v));
     this.listenForColumnInputChanges();
   }
 
@@ -920,7 +953,7 @@ export class DatatableComponent implements OnInit, OnDestroy, DoCheck, AfterView
    */
   onFooterPage(event: any) {
     this.offset = event.page - 1;
-    this.bodyComponent.updateOffsetY(this.offset);
+    this.bodyComponent?.updateOffsetY(this.offset);
 
     this.page.emit({
       count: this.count,
@@ -1005,7 +1038,7 @@ export class DatatableComponent implements OnInit, OnDestroy, DoCheck, AfterView
       return;
     }
 
-    let idx: number;
+    let idx: number = 0;
     const cols = this._internalColumns.map((c, i) => {
       c = { ...c };
 
@@ -1098,7 +1131,7 @@ export class DatatableComponent implements OnInit, OnDestroy, DoCheck, AfterView
 
     // Always go to first page when sorting to see the newly sorted data
     this.offset = 0;
-    this.bodyComponent.updateOffsetY(this.offset);
+    this.bodyComponent?.updateOffsetY(this.offset);
     this.sort.emit(event);
   }
 
@@ -1159,7 +1192,7 @@ export class DatatableComponent implements OnInit, OnDestroy, DoCheck, AfterView
   onTreeAction(event: any) {
     const row = event.row;
     // TODO: For duplicated items this will not work
-    const rowIndex = this._rows.findIndex(r => r[this.treeToRelation] === event.row[this.treeToRelation]);
+    const rowIndex = this._rows.findIndex(r => r[this.treeToRelation!] === event.row[this.treeToRelation!]);
     this.treeAction.emit({ row, rowIndex });
   }
 

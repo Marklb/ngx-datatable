@@ -22,7 +22,7 @@ function defaultSumFunc(cells: any[]): any {
 }
 
 function noopSumFunc(cells: any[]): void {
-  return null;
+  return null as unknown as void; // TODO: Fix type.
 }
 
 @Component({
@@ -31,8 +31,8 @@ function noopSumFunc(cells: any[]): void {
     <datatable-body-row
       *ngIf="summaryRow && _internalColumns"
       tabindex="-1"
-      [innerWidth]="innerWidth"
-      [offsetX]="offsetX"
+      [innerWidth]="$any(innerWidth)"
+      [offsetX]="$any(offsetX)"
       [columns]="_internalColumns"
       [rowHeight]="rowHeight"
       [row]="summaryRow"
@@ -45,14 +45,20 @@ function noopSumFunc(cells: any[]): void {
   }
 })
 export class DataTableSummaryRowComponent implements OnChanges {
-  @Input() rows: any[];
-  @Input() columns: ISummaryColumn[];
+  // tslint:disable: variable-name
+  static ngAcceptInputType_rowHeight: string | number | null | undefined;
+  static ngAcceptInputType_offsetX: string | number | null | undefined;
+  static ngAcceptInputType_innerWidth: string | number | null | undefined;
+  // tslint:enable: variable-name
 
-  @Input() rowHeight: number;
-  @Input() offsetX: number;
-  @Input() innerWidth: number;
+  @Input() rows: any[] | undefined;
+  @Input() columns: ISummaryColumn[] | undefined;
 
-  _internalColumns: ISummaryColumn[];
+  @Input() rowHeight: number | undefined; // TODO: Coerce value.
+  @Input() offsetX: number | undefined; // TODO: Coerce value.
+  @Input() innerWidth: number | undefined; // TODO: Coerce value.
+
+  _internalColumns: ISummaryColumn[] | undefined;
   summaryRow: any = {};
 
   ngOnChanges() {
@@ -64,7 +70,7 @@ export class DataTableSummaryRowComponent implements OnChanges {
   }
 
   private updateInternalColumns() {
-    this._internalColumns = this.columns.map(col => ({
+    this._internalColumns = this.columns!.map(col => ({
       ...col,
       cellTemplate: col.summaryTemplate
     }));
@@ -73,16 +79,14 @@ export class DataTableSummaryRowComponent implements OnChanges {
   private updateValues() {
     this.summaryRow = {};
 
-    this.columns
-      .filter(col => !col.summaryTemplate)
-      .forEach(col => {
-        const cellsFromSingleColumn = this.rows.map(row => row[col.prop]);
-        const sumFunc = this.getSummaryFunction(col);
+    this.columns!.filter((col: any) => !col.summaryTemplate).forEach((col: any) => {
+      const cellsFromSingleColumn = this.rows!.map(row => row[col.prop]);
+      const sumFunc = this.getSummaryFunction(col);
 
-        this.summaryRow[col.prop] = col.pipe
-          ? col.pipe.transform(sumFunc(cellsFromSingleColumn))
-          : sumFunc(cellsFromSingleColumn);
-      });
+      this.summaryRow[col.prop] = col.pipe
+        ? col.pipe.transform(sumFunc(cellsFromSingleColumn))
+        : sumFunc(cellsFromSingleColumn);
+    });
   }
 
   private getSummaryFunction(column: ISummaryColumn): (a: any[]) => any {

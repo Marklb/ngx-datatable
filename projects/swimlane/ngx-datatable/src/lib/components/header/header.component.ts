@@ -71,11 +71,22 @@ import { translateXY } from '../../utils/translate';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DataTableHeaderComponent implements OnDestroy {
+  // tslint:disable: variable-name
+  static ngAcceptInputType_scrollbarH: string | boolean | null | undefined;
+  static ngAcceptInputType_dealsWithGroup: string | boolean | null | undefined;
+  static ngAcceptInputType_sorts: string | any[] | null | undefined;
+  static ngAcceptInputType_sortType: string | SortType | null | undefined;
+  static ngAcceptInputType_allRowsSelected: string | boolean | null | undefined;
+  static ngAcceptInputType_selectionType: string | SelectionType | null | undefined;
+  static ngAcceptInputType_reorderable: string | boolean | null | undefined;
+  static ngAcceptInputType_offsetX: string | number | null | undefined;
+  // tslint:enable: variable-name
+
   @Input() sortAscendingIcon: any;
   @Input() sortDescendingIcon: any;
   @Input() sortUnsetIcon: any;
-  @Input() scrollbarH: boolean;
-  @Input() dealsWithGroup: boolean;
+  @Input() scrollbarH: boolean = false; // TODO: Coerce value.
+  @Input() dealsWithGroup: boolean = false; // TODO: Coerce value.
   @Input() targetMarkerTemplate: any;
 
   targetMarkerContext: any;
@@ -95,11 +106,11 @@ export class DataTableHeaderComponent implements OnDestroy {
     return this._innerWidth;
   }
 
-  @Input() sorts: any[];
-  @Input() sortType: SortType;
-  @Input() allRowsSelected: boolean;
-  @Input() selectionType: SelectionType;
-  @Input() reorderable: boolean;
+  @Input() sorts: any[] = []; // TODO: Coerce value.
+  @Input() sortType: SortType | undefined; // TODO: Coerce value.
+  @Input() allRowsSelected: boolean = false; // TODO: Coerce value.
+  @Input() selectionType: SelectionType | undefined; // TODO: Coerce value.
+  @Input() reorderable: boolean = false; // TODO: Coerce value.
 
   dragEventTarget: any;
 
@@ -134,7 +145,7 @@ export class DataTableHeaderComponent implements OnDestroy {
 
   @Input()
   set offsetX(val: number) {
-    this._offsetX = val;
+    this._offsetX = val; // TODO: Coerce value.
     this.setStylesByGroup();
   }
   get offsetX() {
@@ -151,10 +162,10 @@ export class DataTableHeaderComponent implements OnDestroy {
   _columnGroupWidths: any = {
     total: 100
   };
-  _innerWidth: number;
-  _offsetX: number;
-  _columns: any[];
-  _headerHeight: string;
+  _innerWidth: number = 0;
+  _offsetX: number = 0;
+  _columns: any[] = [];
+  _headerHeight?: string;
   _styleByGroup: { [prop: string]: {} } = {
     left: {},
     center: {},
@@ -207,9 +218,13 @@ export class DataTableHeaderComponent implements OnDestroy {
   }
 
   onColumnResized(width: number, column: DataTableColumnDirective, isDone = true): void {
+    // @ts-ignore
     if (width <= column.minWidth) {
+      // @ts-ignore
       width = column.minWidth;
+      // @ts-ignore
     } else if (width >= column.maxWidth) {
+      // @ts-ignore
       width = column.maxWidth;
     }
 
@@ -314,9 +329,9 @@ export class DataTableHeaderComponent implements OnDestroy {
   }
 
   setStylesByGroup() {
-    this._styleByGroup.left = this.calcStylesByGroup('left');
-    this._styleByGroup.center = this.calcStylesByGroup('center');
-    this._styleByGroup.right = this.calcStylesByGroup('right');
+    this._styleByGroup['left'] = this.calcStylesByGroup('left');
+    this._styleByGroup['center'] = this.calcStylesByGroup('center');
+    this._styleByGroup['right'] = this.calcStylesByGroup('right');
     if (!this.destroyed) {
       this.cd.detectChanges();
     }

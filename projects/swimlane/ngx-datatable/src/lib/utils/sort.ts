@@ -5,7 +5,10 @@ import { SortPropDir } from '../types/sort-prop-dir.type';
 /**
  * Gets the next sort direction
  */
-export function nextSortDir(sortType: SortType, current: SortDirection): SortDirection | undefined {
+export function nextSortDir(
+  sortType: SortType | null | undefined,
+  current: SortDirection | null | undefined
+): SortDirection | undefined {
   if (sortType === SortType.single) {
     if (current === SortDirection.asc) {
       return SortDirection.desc;
@@ -116,6 +119,6 @@ export function sortRows(rows: any[], columns: any[], dirs: SortPropDir[]): any[
     /**
      * all else being equal, preserve original order of the rows (stable sort)
      */
-    return rowToIndexMap.get(rowA) < rowToIndexMap.get(rowB) ? -1 : 1;
+    return rowToIndexMap.get(rowA)! < rowToIndexMap.get(rowB)! ? -1 : 1;
   });
 }

@@ -3,18 +3,22 @@ import { DatatableGroupHeaderTemplateDirective } from './body-group-header-templ
 
 @Directive({ selector: 'ngx-datatable-group-header' })
 export class DatatableGroupHeaderDirective {
+  // tslint:disable: variable-name
+  static ngAcceptInputType_rowHeight: string | number | null | undefined;
+  // tslint:enable: variable-name
+
   /**
    * Row height is required when virtual scroll is enabled.
    */
-  @Input() rowHeight: number | ((group?: any, index?: number) => number) = 0;
+  @Input() rowHeight: number | ((group?: any, index?: number) => number) = 0; // TODO: Coerce value.
 
   @Input('template')
-  _templateInput: TemplateRef<any>;
+  _templateInput: TemplateRef<any> | null | undefined;
 
   @ContentChild(DatatableGroupHeaderTemplateDirective, { read: TemplateRef, static: true })
-  _templateQuery: TemplateRef<any>;
+  _templateQuery: TemplateRef<any> | null | undefined;
 
-  get template(): TemplateRef<any> {
+  get template(): TemplateRef<any> | null | undefined {
     return this._templateInput || this._templateQuery;
   }
 

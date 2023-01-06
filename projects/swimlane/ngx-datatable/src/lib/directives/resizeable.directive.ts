@@ -20,9 +20,14 @@ import { takeUntil, auditTime } from 'rxjs/operators';
   }
 })
 export class ResizeableDirective implements OnDestroy, AfterViewInit {
+  // tslint:disable: variable-name
+  static ngAcceptInputType_minWidth: string | number | null | undefined;
+  static ngAcceptInputType_maxWidth: string | number | null | undefined;
+  // tslint:enable: variable-name
+
   @Input() resizeEnabled: boolean = true;
-  @Input() minWidth: number;
-  @Input() maxWidth: number;
+  @Input() minWidth: number = 0;
+  @Input() maxWidth: number = 0;
 
   @Output() resize: EventEmitter<any> = new EventEmitter();
   @Output() resizingMove: EventEmitter<any> = new EventEmitter();
@@ -30,16 +35,14 @@ export class ResizeableDirective implements OnDestroy, AfterViewInit {
   _resizingRequest = new Subject<any>();
 
   element: HTMLElement;
-  subscription: Subscription;
+  subscription?: Subscription;
   resizing: boolean = false;
-  private resizeHandle: HTMLElement;
+  private resizeHandle?: HTMLElement;
 
   constructor(element: ElementRef, private renderer: Renderer2) {
     this.element = element.nativeElement;
 
-    this._resizingRequest
-      .pipe(auditTime(0))
-      .subscribe(v => this.resizingMove.emit(v));
+    this._resizingRequest.pipe(auditTime(0)).subscribe(v => this.resizingMove.emit(v));
   }
 
   ngAfterViewInit(): void {
@@ -81,10 +84,10 @@ export class ResizeableDirective implements OnDestroy, AfterViewInit {
       event.stopPropagation();
       this.resizing = true;
 
-      const mouseup = fromEvent(document, 'mouseup');
+      const mouseup = fromEvent<MouseEvent>(document, 'mouseup');
       this.subscription = mouseup.subscribe((ev: MouseEvent) => this.onMouseup());
 
-      const mouseMoveSub = fromEvent(document, 'mousemove')
+      const mouseMoveSub = fromEvent<MouseEvent>(document, 'mousemove')
         .pipe(takeUntil(mouseup))
         .subscribe((e: MouseEvent) => this.move(e, initialWidth, mouseDownScreenX));
 

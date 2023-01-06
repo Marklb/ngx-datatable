@@ -2,6 +2,12 @@ import { TableColumnProp } from '../types/table-column.type';
 
 // maybe rename this file to prop-getters.ts
 
+// export type IndexValueGetter<TObject = any[], TProp = number, TPropValue = any> = (obj: TObject, prop: TProp) => TPropValue;
+// export type ValueValueGetter<TObject = any, TProp = string, TPropValue = any> = (obj: TObject, prop: TProp) => TPropValue;
+
+// export type ValueGetter<TObject = any, TProp extends TableColumnProp = TableColumnProp, TPropValue = any> =
+//   IndexValueGetter<TObject, TProp, TPropValue> | ValueValueGetter<TObject, TProp, TPropValue>;
+
 export type ValueGetter = (obj: any, prop: TableColumnProp) => any;
 
 /**
@@ -15,19 +21,20 @@ export function emptyStringGetter(): string {
  * Returns the appropriate getter function for this kind of prop.
  * If prop == null, returns the emptyStringGetter.
  */
+// export function getterForProp<TObject = any, TProp extends TableColumnProp = TableColumnProp, TPropValue = any>(prop: TProp): ValueGetter<TObject, TProp, TPropValue> {
 export function getterForProp(prop: TableColumnProp): ValueGetter {
   if (prop == null) {
     return emptyStringGetter;
   }
 
   if (typeof prop === 'number') {
-    return numericIndexGetter;
+    return numericIndexGetter as ValueGetter; // TODO: Fix type.
   } else {
     // deep or simple
     if (prop.indexOf('.') !== -1) {
-      return deepValueGetter;
+      return deepValueGetter as ValueGetter; // TODO: Fix type.
     } else {
-      return shallowValueGetter;
+      return shallowValueGetter as ValueGetter; // TODO: Fix type.
     }
   }
 }

@@ -65,10 +65,18 @@ export type TreeStatus = 'collapsed' | 'expanded' | 'loading' | 'disabled';
   `
 })
 export class DataTableBodyCellComponent implements DoCheck, OnDestroy {
+  // tslint:disable: variable-name
+  static ngAcceptInputType_rowHeight: string | number | null | undefined;
+  static ngAcceptInputType_isSelected: string | boolean | null | undefined;
+  static ngAcceptInputType_expanded: string | boolean | null | undefined;
+  static ngAcceptInputType_rowIndex: string | number | null | undefined;
+  static ngAcceptInputType_treeStatus: string | TreeStatus | null | undefined;
+  // tslint:enable: variable-name
+
   @Input() displayCheck: (row: any, column?: TableColumn, value?: any) => boolean;
 
   @Input() set group(group: any) {
-    this._group = group;
+    this._group = group; // TODO: Fix type.
     this.cellContext.group = group;
     this.checkValueUpdates();
     this.cd.markForCheck();
@@ -79,7 +87,7 @@ export class DataTableBodyCellComponent implements DoCheck, OnDestroy {
   }
 
   @Input() set rowHeight(val: number) {
-    this._rowHeight = val;
+    this._rowHeight = val; // TODO: Coerce value.
     this.cellContext.rowHeight = val;
     this.checkValueUpdates();
     this.cd.markForCheck();
@@ -90,7 +98,7 @@ export class DataTableBodyCellComponent implements DoCheck, OnDestroy {
   }
 
   @Input() set isSelected(val: boolean) {
-    this._isSelected = val;
+    this._isSelected = val; // TODO: Coerce value.
     this.cellContext.isSelected = val;
     this.cd.markForCheck();
   }
@@ -100,7 +108,7 @@ export class DataTableBodyCellComponent implements DoCheck, OnDestroy {
   }
 
   @Input() set expanded(val: boolean) {
-    this._expanded = val;
+    this._expanded = val; // TODO: Coerce value.
     this.cellContext.expanded = val;
     this.cd.markForCheck();
   }
@@ -110,7 +118,7 @@ export class DataTableBodyCellComponent implements DoCheck, OnDestroy {
   }
 
   @Input() set rowIndex(val: number) {
-    this._rowIndex = val;
+    this._rowIndex = val; // TODO: Coerce value.
     this.cellContext.rowIndex = val;
     this.checkValueUpdates();
     this.cd.markForCheck();
@@ -121,18 +129,18 @@ export class DataTableBodyCellComponent implements DoCheck, OnDestroy {
   }
 
   @Input() set column(column: TableColumn) {
-    this._column = column;
+    this._column = column; // TODO: Coerce value.
     this.cellContext.column = column;
     this.checkValueUpdates();
     this.cd.markForCheck();
   }
 
   get column(): TableColumn {
-    return this._column;
+    return this._column as TableColumn;
   }
 
   @Input() set row(row: any) {
-    this._row = row;
+    this._row = row; // TODO: Coerce value.
     this.cellContext.row = row;
     this.checkValueUpdates();
     this.cd.markForCheck();
@@ -143,7 +151,7 @@ export class DataTableBodyCellComponent implements DoCheck, OnDestroy {
   }
 
   @Input() set sorts(val: any[]) {
-    this._sorts = val;
+    this._sorts = val; // TODO: Coerce value.
     this.calcSortDir = this.calcSortDir(val);
   }
 
@@ -152,6 +160,7 @@ export class DataTableBodyCellComponent implements DoCheck, OnDestroy {
   }
 
   @Input() set treeStatus(status: TreeStatus) {
+    // TODO: Coerce value.
     if (status !== 'collapsed' && status !== 'expanded' && status !== 'loading' && status !== 'disabled') {
       this._treeStatus = 'collapsed';
     } else {
@@ -163,7 +172,7 @@ export class DataTableBodyCellComponent implements DoCheck, OnDestroy {
   }
 
   get treeStatus(): TreeStatus {
-    return this._treeStatus;
+    return this._treeStatus as TreeStatus;
   }
 
   @Output() activate: EventEmitter<any> = new EventEmitter();
@@ -171,7 +180,7 @@ export class DataTableBodyCellComponent implements DoCheck, OnDestroy {
   @Output() treeAction: EventEmitter<any> = new EventEmitter();
 
   @ViewChild('cellTemplate', { read: ViewContainerRef, static: true })
-  cellTemplate: ViewContainerRef;
+  cellTemplate: ViewContainerRef | null | undefined;
 
   @HostBinding('class')
   get columnCssClasses(): any {
@@ -217,18 +226,18 @@ export class DataTableBodyCellComponent implements DoCheck, OnDestroy {
   }
 
   @HostBinding('style.width.px')
-  get width(): number {
-    return this.column.width;
+  get width(): number | null | undefined {
+    return this.column?.width;
   }
 
   @HostBinding('style.minWidth.px')
-  get minWidth(): number {
-    return this.column.minWidth;
+  get minWidth(): number | null | undefined {
+    return this.column?.minWidth;
   }
 
   @HostBinding('style.maxWidth.px')
-  get maxWidth(): number {
-    return this.column.maxWidth;
+  get maxWidth(): number | null | undefined {
+    return this.column?.maxWidth;
   }
 
   @HostBinding('style.height')
@@ -242,7 +251,7 @@ export class DataTableBodyCellComponent implements DoCheck, OnDestroy {
 
   sanitizedValue: any;
   value: any;
-  sortDir: SortDirection;
+  sortDir: SortDirection | null | undefined;
   isFocused = false;
   onCheckboxChangeFn = this.onCheckboxChange.bind(this);
   activateFn = this.activate.emit.bind(this.activate);
@@ -252,6 +261,7 @@ export class DataTableBodyCellComponent implements DoCheck, OnDestroy {
     activateFn: this.activateFn,
     row: this.row,
     group: this.group,
+    // @ts-ignore
     value: this.value,
     column: this.column,
     rowHeight: this.rowHeight,
@@ -261,16 +271,16 @@ export class DataTableBodyCellComponent implements DoCheck, OnDestroy {
     onTreeAction: this.onTreeAction.bind(this)
   };
 
-  private _isSelected: boolean;
-  private _sorts: any[];
-  private _column: TableColumn;
+  private _isSelected: boolean = false;
+  private _sorts: any[] = [];
+  private _column: TableColumn | undefined;
   private _row: any;
   private _group: any;
-  private _rowHeight: number;
-  private _rowIndex: number;
-  private _expanded: boolean;
+  private _rowHeight: number = 0;
+  private _rowIndex: number = 0;
+  private _expanded: boolean = false;
   private _element: any;
-  private _treeStatus: TreeStatus;
+  private _treeStatus: TreeStatus | undefined;
 
   constructor(element: ElementRef, private cd: ChangeDetectorRef) {
     this._element = element.nativeElement;
@@ -292,8 +302,9 @@ export class DataTableBodyCellComponent implements DoCheck, OnDestroy {
     if (!this.row || !this.column) {
       value = '';
     } else {
+      // @ts-ignore
       const val = this.column.$$valueGetter(this.row, this.column.prop);
-      const userPipe: PipeTransform = this.column.pipe;
+      const userPipe: PipeTransform | undefined = this.column.pipe;
 
       if (userPipe) {
         value = userPipe.transform(val);

@@ -43,7 +43,7 @@ function scaleColumns(colsByGroup: any, maxWidth: any, totalFlexGrow: any) {
     }
   }
 
-  const hasMinWidth = {};
+  const hasMinWidth: any = {};
   let remainingWidth = maxWidth;
 
   // resize columns until no width is left to be distributed

@@ -49,8 +49,16 @@ import { translateXY } from '../../utils/translate';
   `
 })
 export class DataTableBodyRowComponent implements DoCheck {
+  // tslint:disable: variable-name
+  static ngAcceptInputType_columns: string | any[] | null | undefined;
+  static ngAcceptInputType_: string | number | null | undefined;
+  static ngAcceptInputType_expanded: string | boolean | null | undefined;
+  static ngAcceptInputType_isSelected: string | boolean | null | undefined;
+  static ngAcceptInputType_rowIndex: string | number | null | undefined;
+  // tslint:enable: variable-name
+
   @Input() set columns(val: any[]) {
-    this._columns = val;
+    this._columns = val; // TODO: Coerce value.
     this.recalculateColumns(val);
     this.buildStylesByGroup();
   }
@@ -65,7 +73,7 @@ export class DataTableBodyRowComponent implements DoCheck {
       this._columnGroupWidths = columnGroupWidths(colByPin, this._columns);
     }
 
-    this._innerWidth = val;
+    this._innerWidth = val; // TODO: Coerce value.
     this.recalculateColumns();
     this.buildStylesByGroup();
   }
@@ -74,14 +82,14 @@ export class DataTableBodyRowComponent implements DoCheck {
     return this._innerWidth;
   }
 
-  @Input() expanded: boolean;
-  @Input() rowClass: any;
-  @Input() row: any;
-  @Input() group: any;
-  @Input() isSelected: boolean;
-  @Input() rowIndex: number;
-  @Input() displayCheck: any;
-  @Input() treeStatus: TreeStatus = 'collapsed';
+  @Input() expanded: boolean = false; // TODO: Coerce value.
+  @Input() rowClass: any | null | undefined;
+  @Input() row: any | null | undefined;
+  @Input() group: any | null | undefined;
+  @Input() isSelected: boolean = false; // TODO: Coerce value.
+  @Input() rowIndex: number = 0; // TODO: Coerce value.
+  @Input() displayCheck: any | null | undefined;
+  @Input() treeStatus: TreeStatus | null | undefined = 'collapsed';
 
   @Input()
   set offsetX(val: number) {
@@ -124,7 +132,7 @@ export class DataTableBodyRowComponent implements DoCheck {
 
   @HostBinding('style.height.px')
   @Input()
-  rowHeight: number;
+  rowHeight: number | null | undefined; // Coerce value.
 
   @HostBinding('style.width.px')
   get columnsTotalWidths(): string {
@@ -137,9 +145,9 @@ export class DataTableBodyRowComponent implements DoCheck {
   _element: any;
   _columnGroupWidths: any;
   _columnsByPin: any;
-  _offsetX: number;
-  _columns: any[];
-  _innerWidth: number;
+  _offsetX: number = 0;
+  _columns: any[] = [];
+  _innerWidth: number = 0;
   _groupStyles: { [prop: string]: {} } = {
     left: {},
     center: {},
@@ -173,9 +181,9 @@ export class DataTableBodyRowComponent implements DoCheck {
   }
 
   buildStylesByGroup() {
-    this._groupStyles.left = this.calcStylesByGroup('left');
-    this._groupStyles.center = this.calcStylesByGroup('center');
-    this._groupStyles.right = this.calcStylesByGroup('right');
+    this._groupStyles['left'] = this.calcStylesByGroup('left');
+    this._groupStyles['center'] = this.calcStylesByGroup('center');
+    this._groupStyles['right'] = this.calcStylesByGroup('right');
     this.cd.markForCheck();
   }
 

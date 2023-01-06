@@ -1,6 +1,6 @@
 import { camelCase } from './camel-case';
 
-const cache = {};
+const cache: any = {};
 const testStyle = typeof document !== 'undefined' ? document.createElement('div').style : undefined;
 
 // Get Prefix
@@ -15,10 +15,11 @@ const prefix = (function () {
           .match(/-(moz|webkit|ms)-/)
       : null;
   const pre = match !== null ? match[1] : undefined;
+  // @ts-ignore
   // tslint:disable-next-line: tsr-detect-non-literal-regexp
   const dom = typeof pre !== 'undefined' ? 'WebKit|Moz|MS|O'.match(new RegExp('(' + pre + ')', 'i'))[1] : undefined;
 
-  return dom
+  return dom && pre
     ? {
         dom,
         lowercase: pre,
@@ -32,9 +33,9 @@ export function getVendorPrefixedName(property: string) {
   const name = camelCase(property);
 
   if (!cache[name]) {
-    if (prefix !== undefined && testStyle[prefix.css + property] !== undefined) {
+    if (prefix !== undefined && (testStyle || ({} as any))[prefix.css + property] !== undefined) {
       cache[name] = prefix.css + property;
-    } else if (testStyle[property] !== undefined) {
+    } else if ((testStyle || ({} as any))[property] !== undefined) {
       cache[name] = property;
     }
   }

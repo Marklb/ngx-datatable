@@ -18,17 +18,24 @@ export interface Model {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DataTableSelectionComponent {
-  @Input() rows: any[];
-  @Input() selected: any[];
-  @Input() selectEnabled: boolean;
-  @Input() selectionType: SelectionType;
-  @Input() rowIdentity: any;
-  @Input() selectCheck: any;
+  // tslint:disable: variable-name
+  static ngAcceptInputType_rows: any[] | null | undefined;
+  static ngAcceptInputType_selected: any[] | null | undefined;
+  static ngAcceptInputType_selectEnabled: string | boolean | null | undefined;
+  static ngAcceptInputType_selectionType: string | SelectionType | null | undefined;
+  // tslint:enable: variable-name
+
+  @Input() rows: any[] = []; // TODO: Fix type.
+  @Input() selected: any[] = []; // TODO: Fix type.
+  @Input() selectEnabled: boolean = false; // TODO: Coerce value.
+  @Input() selectionType: SelectionType | null | undefined; // TODO: Coerce value.
+  @Input() rowIdentity: any | null | undefined;
+  @Input() selectCheck: any | null | undefined;
 
   @Output() activate: EventEmitter<any> = new EventEmitter();
   @Output() select: EventEmitter<any> = new EventEmitter();
 
-  prevIndex: number;
+  prevIndex: number = 0;
 
   selectRow(event: KeyboardEvent | MouseEvent, index: number, row: any): void {
     if (!this.selectEnabled) return;
@@ -112,6 +119,7 @@ export class DataTableSelectionComponent {
         focusElement = parentElement.nextElementSibling;
       }
 
+      // @ts-ignore
       if (focusElement && focusElement.children.length) {
         return focusElement.children[0];
       }
@@ -133,6 +141,7 @@ export class DataTableSelectionComponent {
       }
     }
 
+    // @ts-ignore
     if (nextCellElement) nextCellElement.focus();
   }
 
