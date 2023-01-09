@@ -46,8 +46,8 @@ import { DatatableFooterDirective } from './footer.directive';
 })
 export class DataTableFooterComponent {
   // tslint:disable: variable-name
-  static ngAcceptInputType_displayPageCount: string | number | null | undefined;
-  static ngAcceptInputType_displayPager: string | number | null | undefined;
+  static ngAcceptInputType_displayPageCount: string | boolean | null | undefined;
+  static ngAcceptInputType_displayPager: string | boolean | null | undefined;
   static ngAcceptInputType_selectedCount: string | number | null | undefined;
   static ngAcceptInputType_rowCount: string | number | null | undefined;
   static ngAcceptInputType_pageSize: string | number | null | undefined;
