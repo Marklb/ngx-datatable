@@ -765,15 +765,15 @@ export class DatatableComponent implements OnInit, OnDestroy, DoCheck, AfterView
    */
   groupArrayBy(originalArray: any, groupBy: any) {
     // create a map to hold groups with their corresponding results
-    const map = new Map();
+    const grpsMap = new Map();
     let i: number = 0;
 
     originalArray.forEach((item: any) => {
       const key = item[groupBy];
-      if (!map.has(key)) {
-        map.set(key, [item]);
+      if (!grpsMap.has(key)) {
+        grpsMap.set(key, [item]);
       } else {
-        map.get(key).push(item);
+        grpsMap.get(key).push(item);
       }
       i++;
     });
@@ -783,7 +783,7 @@ export class DatatableComponent implements OnInit, OnDestroy, DoCheck, AfterView
     };
 
     // convert map back to a simple array of objects
-    return Array.from(map, x => addGroup(x[0], x[1]));
+    return Array.from(grpsMap, x => addGroup(x[0], x[1]));
   }
 
   /*
@@ -1045,7 +1045,7 @@ export class DatatableComponent implements OnInit, OnDestroy, DoCheck, AfterView
       windowWidth = windowWidth - this.scrollbarHelper.width;
     }
 
-    let rowWidth = getContentWidth(columns);
+    const rowWidth = getContentWidth(columns);
 
     const maxOffsetX = rowWidth - windowWidth;
 
