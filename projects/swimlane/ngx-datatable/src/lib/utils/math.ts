@@ -156,7 +156,7 @@ function removeProcessedColumns(columnsToResize: any[], columnsProcessed: any[])
 /**
  * Gets the width of the columns
  */
-function getContentWidth(allColumns: any, defaultColWidth: number = 300): number {
+export function getContentWidth(allColumns: any, defaultColWidth: number = 300): number {
   let contentWidth = 0;
 
   for (const column of allColumns) {

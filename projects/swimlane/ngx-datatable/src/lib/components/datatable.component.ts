@@ -44,8 +44,9 @@ import { ScrollbarHelper } from '../services/scrollbar-helper.service';
 import { ColumnChangesService } from '../services/column-changes.service';
 import { DimensionsHelper } from '../services/dimensions-helper.service';
 import { throttleable } from '../utils/throttle';
-import { forceFillColumnWidths, adjustColumnWidths } from '../utils/math';
+import { forceFillColumnWidths, adjustColumnWidths, getContentWidth } from '../utils/math';
 import { sortRows } from '../utils/sort';
+import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'ngx-datatable',
@@ -643,6 +644,7 @@ export class DatatableComponent implements OnInit, OnDestroy, DoCheck, AfterView
   rowDiffer: KeyValueDiffer<{}, {}>;
 
   _offsetX = new BehaviorSubject(0);
+  offsetX$ = this._offsetX.asObservable().pipe(map(offsetX => (offsetX < 0 ? 0 : offsetX)));
   _limit: number | undefined;
   _count: number = 0;
   _offset: number = 0;
@@ -855,6 +857,8 @@ export class DatatableComponent implements OnInit, OnDestroy, DoCheck, AfterView
       adjustColumnWidths(columns, width);
     }
 
+    this.resetOffsetX();
+
     return columns;
   }
 
@@ -1029,6 +1033,25 @@ export class DatatableComponent implements OnInit, OnDestroy, DoCheck, AfterView
       newValue,
       isDone
     });
+  }
+
+  resetOffsetX(columns: any = this._internalColumns) {
+    if (columns == null || columns === undefined) {
+      return;
+    }
+
+    let windowWidth = this._innerWidth;
+    if (this.scrollbarV) {
+      windowWidth = windowWidth - this.scrollbarHelper.width;
+    }
+
+    let rowWidth = getContentWidth(columns);
+
+    const maxOffsetX = rowWidth - windowWidth;
+
+    if (this._offsetX.value > maxOffsetX) {
+      this._offsetX.next(maxOffsetX);
+    }
   }
 
   /**
