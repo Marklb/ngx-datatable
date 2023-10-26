@@ -363,6 +363,9 @@ export class DataTableBodyComponent implements OnInit, OnDestroy {
       });
     }
 
+    this.offsetY = scrollYPos;
+    this.offsetX = scrollXPos;
+
     this.updateIndexes();
     this.updatePage(event.direction);
     this.updateRows();
