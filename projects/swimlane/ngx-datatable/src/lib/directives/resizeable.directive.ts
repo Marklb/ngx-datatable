@@ -58,6 +58,7 @@ export class ResizeableDirective implements OnDestroy, AfterViewInit {
     if (this.subscription && !this.subscription.closed) {
       this._destroySubscription();
       this.resize.emit(this.element.clientWidth);
+      // console.log('onMouseup', this.element.clientWidth);
     }
   }
 
@@ -78,6 +79,7 @@ export class ResizeableDirective implements OnDestroy, AfterViewInit {
         .subscribe((e: MouseEvent) => this.move(e, initialWidth, mouseDownScreenX));
 
       this.subscription.add(mouseMoveSub);
+      // console.log('onMousedown', initialWidth, mouseDownScreenX);
     }
   }
 

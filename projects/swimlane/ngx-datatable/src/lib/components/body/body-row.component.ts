@@ -170,6 +170,7 @@ export class DataTableBodyRowComponent<TRow = any> implements DoCheck, OnChanges
 
   ngDoCheck(): void {
     if (this._rowDiffer.diff(this.row)) {
+      // console.log('Row changed', this.row);
       this.cd.markForCheck();
     }
   }
@@ -222,6 +223,25 @@ export class DataTableBodyRowComponent<TRow = any> implements DoCheck, OnChanges
     const colsByPin = columnsByPin(this._columns);
     this._columnsByPin = columnsByPinArr(this._columns);
     this._columnGroupWidths = columnGroupWidths(colsByPin, this._columns);
+    // if (this._columns) {
+    //   const rowsStr = this._columns.reduce((acc, column) => acc + `${column.name}: (${column.width}, ${column.$$oldWidth}), `, 'Rows: ')
+    //   // console.log(rowsStr)
+    //   // const changing = this._columns.filter(column => column.$$oldWidth > 0 && column.width !== column.$$oldWidth);
+    //   const changing = this._columns.filter(column => column.$$oldWidth > 0);
+    //   // const changedStr = this._columns.reduce((acc, column) => acc + `${column.name}: ${column.width !== column.$$oldWidth}, `, 'Rows: ')
+    //   const changedStr = changing.reduce((acc, column) => acc + `${column.name}, `, 'Changed: ')
+    //   console.log(rowsStr + ' | ' + changedStr)
+    //   if (changing.length > 0) {
+    //     // this.recalculateColumns();
+    //     this._columns.forEach(column => {
+    //       if (column.$$oldWidth > 0) {
+    //         column.width = column.$$oldWidth;
+    //       }
+    //     });
+    //     this._columns = [...this._columns];
+    //     this.cd.detectChanges();
+    //   }
+    // }
   }
 
   onTreeAction() {

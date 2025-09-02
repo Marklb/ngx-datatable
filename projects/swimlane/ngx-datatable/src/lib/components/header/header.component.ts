@@ -250,6 +250,7 @@ export class DataTableHeaderComponent implements OnDestroy, OnChanges {
   }
 
   onColumnResizing(width: number, column: TableColumn): void {
+    // console.log('onColumnResizing', width, column.name);
     this.resizing.emit(this.makeResizeEvent(width, column));
   }
 

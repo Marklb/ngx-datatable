@@ -11,7 +11,14 @@ import { NgClass, NgTemplateOutlet } from '@angular/common';
       [ngClass]="{ 'selected-count': selectedMessage }"
       [style.height.px]="footerHeight"
     >
-      @if (footerTemplate) {
+      @if (displayPageCount) {
+      <div class="page-count">
+        @if (selectedMessage) {
+        <span> {{ selectedCount?.toLocaleString() }} {{ selectedMessage }} / </span>
+        }
+        {{ rowCount?.toLocaleString() }} {{ totalMessage }}
+      </div>
+      } @if (footerTemplate) {
       <ng-template
         [ngTemplateOutlet]="footerTemplate.template"
         [ngTemplateOutletContext]="{
@@ -23,13 +30,7 @@ import { NgClass, NgTemplateOutlet } from '@angular/common';
         }"
       >
       </ng-template>
-      } @else {
-      <div class="page-count">
-        @if (selectedMessage) {
-        <span> {{ selectedCount?.toLocaleString() }} {{ selectedMessage }} / </span>
-        }
-        {{ rowCount?.toLocaleString() }} {{ totalMessage }}
-      </div>
+      } @if (displayPager) {
       <datatable-pager
         [pagerLeftArrowIcon]="pagerLeftArrowIcon"
         [pagerRightArrowIcon]="pagerRightArrowIcon"
@@ -52,6 +53,8 @@ import { NgClass, NgTemplateOutlet } from '@angular/common';
   imports: [NgClass, NgTemplateOutlet, DataTablePagerComponent]
 })
 export class DataTableFooterComponent {
+  @Input() displayPageCount: boolean;
+  @Input() displayPager: boolean;
   @Input() footerHeight: number;
   @Input() rowCount: number;
   @Input() pageSize: number;

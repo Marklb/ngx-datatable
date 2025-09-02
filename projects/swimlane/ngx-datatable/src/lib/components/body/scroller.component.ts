@@ -12,6 +12,8 @@ import {
   Renderer2
 } from '@angular/core';
 
+import { ScrollbarHelper } from '../../services/scrollbar-helper.service';
+
 @Component({
   selector: 'datatable-scroller',
   template: ` <ng-content></ng-content> `,
@@ -23,6 +25,7 @@ import {
 })
 export class ScrollerComponent implements OnInit, OnDestroy {
   private renderer = inject(Renderer2);
+  private scrollHelper = inject(ScrollbarHelper, { optional: true });
 
   @Input() scrollbarV = false;
   @Input() scrollbarH = false;
@@ -52,13 +55,13 @@ export class ScrollerComponent implements OnInit, OnDestroy {
       const renderer = this.renderer;
       this.parentElement = renderer.parentNode(renderer.parentNode(this.element));
       this._scrollEventListener = this.onScrolled.bind(this);
-      this.parentElement.addEventListener('scroll', this._scrollEventListener);
+      this.scrollHelper.onInitScroller(this);
     }
   }
 
   ngOnDestroy(): void {
     if (this._scrollEventListener) {
-      this.parentElement.removeEventListener('scroll', this._scrollEventListener);
+      this.scrollHelper.onDestroyScroller(this);
       this._scrollEventListener = null;
     }
   }

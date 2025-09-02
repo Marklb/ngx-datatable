@@ -73,11 +73,12 @@ import { DataTableGhostLoaderComponent } from './ghost-loader/ghost-loader.compo
       (activate)="activate.emit($event)"
     >
       @if (rows?.length) {
+        <!-- TODO: Do we still need the hard-coded value or can it go back to [scrollWidth]="columnGroupWidths?.total" -->
         <datatable-scroller
           [scrollbarV]="scrollbarV"
           [scrollbarH]="scrollbarH"
           [scrollHeight]="scrollHeight()"
-          [scrollWidth]="columnGroupWidths?.total"
+          [scrollWidth]="10"
           (scroll)="onBodyScroll($event)"
         >
           @if (summaryRow && summaryPosition === 'top') {

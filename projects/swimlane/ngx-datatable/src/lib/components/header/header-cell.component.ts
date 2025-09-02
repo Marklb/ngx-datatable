@@ -35,7 +35,12 @@ import { NgTemplateOutlet } from '@angular/common';
       </ng-template>
       } @if (isCheckboxable) {
       <label class="datatable-checkbox">
-        <input type="checkbox" [checked]="allRowsSelected" (change)="select.emit()" />
+        <input
+          type="checkbox"
+          [checked]="allRowsSelected"
+          (change)="select.emit()"
+          [title]="allRowsSelected ? 'Deselect all selected rows' : 'Select all available rows'"
+        />
       </label>
       } @if (column.headerTemplate) {
       <ng-template
@@ -148,6 +153,10 @@ export class DataTableHeaderCellComponent implements OnInit {
     const sortDir = this.sortDir;
     if (sortDir) {
       cls += ` sort-active sort-${sortDir}`;
+    }
+
+    if (this.column.$$resizing) {
+      cls += ' resizing';
     }
 
     return cls;

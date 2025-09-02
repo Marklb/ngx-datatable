@@ -182,6 +182,9 @@ export function forceFillColumnWidths(
   for (const column of columnsToResize) {
     column.$$oldWidth = 0;
   }
+
+  // const rowsStr = allColumns.reduce((acc, column) => acc + `${column.name}: ${column.width}, `, 'Rows: ')
+  // console.log(rowsStr)
 }
 
 /**

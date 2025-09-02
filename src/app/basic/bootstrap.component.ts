@@ -20,16 +20,12 @@ import { Employee } from '../data.model';
       <ngx-datatable
         class="bootstrap"
         [rows]="rows"
-        [loadingIndicator]="loadingIndicator"
         [columns]="columns"
         [columnMode]="ColumnMode.force"
-        [headerHeight]="40"
-        [summaryRow]="true"
-        [summaryPosition]="'bottom'"
-        [footerHeight]="40"
-        [limit]="10"
-        rowHeight="auto"
-        [reorderable]="reorderable"
+        [headerHeight]="50"
+        [footerHeight]="50"
+        [scrollbarV]="true"
+        [scrollbarH]="true"
       >
       </ngx-datatable>
     </div>
@@ -54,6 +50,14 @@ export class BootstrapThemeComponent {
       this.rows = data;
       setTimeout(() => {
         this.loadingIndicator = false;
+
+        setInterval(() => {
+          const rows = [
+            ...this.rows,
+            { name: 'New Employee', gender: 'male', company: 'New Company' }
+          ];
+          this.rows = rows;
+        }, 10_000);
       }, 1500);
     });
   }

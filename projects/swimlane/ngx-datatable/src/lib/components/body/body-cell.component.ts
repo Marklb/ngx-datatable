@@ -261,6 +261,9 @@ export class DataTableBodyCellComponent<TRow extends { level?: number } = any>
     if (this.disable$?.value) {
       cls += ' row-disabled';
     }
+    if (this.column.$$resizing) {
+      cls += ' resizing';
+    }
 
     return cls;
   }

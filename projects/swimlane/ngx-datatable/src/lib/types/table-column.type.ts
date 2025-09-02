@@ -27,7 +27,10 @@ export interface TableColumn<TRow = any> {
    * Internal for setColumnDefaults
    */
   $$valueGetter?: ValueGetter;
-
+  /**
+   * Internal for tracking actively resizing columns
+   */
+  $$resizing?: boolean;
   /**
    * Determines if column is checkbox
    */

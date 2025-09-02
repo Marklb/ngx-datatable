@@ -29,7 +29,7 @@ import {
 
 import { DatatableGroupHeaderDirective } from './body/body-group-header.directive';
 
-import { BehaviorSubject, Subscription } from 'rxjs';
+import { BehaviorSubject, map, Subscription } from 'rxjs';
 import { INgxDatatableConfig } from '../ngx-datatable.module';
 import { groupRowsByParents, optionalGetterForProp } from '../utils/tree';
 import { TableColumn } from '../types/table-column.type';
@@ -455,6 +455,16 @@ export class DatatableComponent<TRow = any>
   @Input() summaryPosition: string = 'top';
 
   /**
+   * A flag to hide / show page count in footer
+   */
+  @Input() displayPageCount: boolean = true;
+
+  /**
+   * A flag to hide / show pager in footer
+   */
+  @Input() displayPager: boolean = true;
+
+  /**
    * A function you can use to check whether you want
    * to disable a row. Example:
    *
@@ -678,15 +688,28 @@ export class DatatableComponent<TRow = any>
    * Returns if all rows are selected.
    */
   get allRowsSelected(): boolean {
-    let allRowsSelected = this.rows && this.selected && this.selected.length === this.rows.length;
+    let selectableRows = this.rows;
 
-    if (this.bodyComponent && this.selectAllRowsOnPage) {
-      const indexes = this.bodyComponent.indexes;
-      const rowsOnPage = indexes().last - indexes().first;
-      allRowsSelected = this.selected.length === rowsOnPage;
+    if (
+      !selectableRows ||
+      selectableRows.length === 0 ||
+      !this.selected ||
+      this.selected.length === 0
+    ) {
+      return false;
     }
 
-    return this.selected && this.rows && this.rows.length !== 0 && allRowsSelected;
+    if (this.bodyComponent && this.selectAllRowsOnPage) {
+      const indexes = this.bodyComponent.indexes();
+      selectableRows = selectableRows.slice(indexes.first, indexes.last);
+    }
+
+    if (this.displayCheck) {
+      const checkable = this._internalColumns.filter(c => c.checkboxable);
+      selectableRows = selectableRows.filter(r => checkable.find(c => this.displayCheck(r, c)));
+    }
+
+    return this.selected.length === selectableRows.length;
   }
 
   element = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
@@ -697,6 +720,7 @@ export class DatatableComponent<TRow = any>
   rowDiffer: IterableDiffer<TRow> = inject(IterableDiffers).find([]).create();
 
   _offsetX = new BehaviorSubject(0);
+  offsetX$ = this._offsetX.asObservable().pipe(map(offsetX => (offsetX < 0 ? 0 : offsetX)));
   _limit: number | undefined;
   _count = 0;
   _offset = 0;
@@ -822,15 +846,15 @@ export class DatatableComponent<TRow = any>
    */
   groupArrayBy(originalArray: TRow[], groupBy: keyof TRow) {
     // create a map to hold groups with their corresponding results
-    const map = new Map<TRow[keyof TRow], TRow[]>();
+    const mapGrp = new Map<TRow[keyof TRow], TRow[]>();
     let i = 0;
 
     originalArray.forEach(item => {
       const key = item[groupBy];
-      if (!map.has(key)) {
-        map.set(key, [item]);
+      if (!mapGrp.has(key)) {
+        mapGrp.set(key, [item]);
       } else {
-        map.get(key).push(item);
+        mapGrp.get(key).push(item);
       }
       i++;
     });
@@ -838,7 +862,7 @@ export class DatatableComponent<TRow = any>
     const addGroup = (key: TRow[keyof TRow], value: TRow[]) => ({ key, value });
 
     // convert map back to a simple array of objects
-    return Array.from(map, x => addGroup(x[0], x[1]));
+    return Array.from(mapGrp, x => addGroup(x[0], x[1]));
   }
 
   /*
@@ -946,6 +970,8 @@ export class DatatableComponent<TRow = any>
     if (this.headerComponent && this.headerComponent._columnGroupWidths.total !== width) {
       this.headerComponent.columns = [...this._internalColumns];
     }
+
+    // this.resetOffsetX(); // TODO: Do we need this?
 
     return columns;
   }
@@ -1107,7 +1133,7 @@ export class DatatableComponent<TRow = any>
 
     let idx: number;
     const cols = this._internalColumns.map((c, i) => {
-      c = { ...c };
+      c = { ...c, $$resizing: false };
 
       if (c.$$id === column.$$id) {
         idx = i;
@@ -1129,6 +1155,7 @@ export class DatatableComponent<TRow = any>
       newValue,
       prevValue
     });
+    // console.log('[Datatable] onColumnResize', column, newValue, prevValue);
   }
 
   onColumnResizing({ column, newValue }: ColumnResizeEvent): void {
@@ -1137,8 +1164,13 @@ export class DatatableComponent<TRow = any>
     }
     column.width = newValue;
     column.$$oldWidth = newValue;
+    column.$$resizing = true;
     const idx = this._internalColumns.indexOf(column);
     this.recalculateColumns(this._internalColumns, idx);
+    // Needed to cause cell width changes, unless we want to propagate that
+    // another way.
+    this._internalColumns = [...this._internalColumns.map(c => ({ ...c }))];
+    // console.log('[Datatable] onColumnResizing', column, newValue);
   }
 
   /**
@@ -1221,18 +1253,27 @@ export class DatatableComponent<TRow = any>
    * Toggle all row selection
    */
   onHeaderSelect(): void {
+    // TODO: Consider removing the `displayCheck` usage and just use
+    // `disableRowCheck`. Currently, our apps expect `displayCheck`, so we keep
+    // it for now.
     if (this.bodyComponent && this.selectAllRowsOnPage) {
       // before we splice, chk if we currently have all selected
       const first = this.bodyComponent.indexes().first;
       const last = this.bodyComponent.indexes().last;
-      const allSelected = this.selected.length === last - first;
+
+      let selectableRows = this._internalRows.slice(first, last);
+      if (this.displayCheck) {
+        const checkable = this._internalColumns.filter(c => c.checkboxable);
+        selectableRows = selectableRows.filter(r => checkable.find(c => this.displayCheck(r, c)));
+      }
+      const allSelected = this.selected.length === selectableRows.length;
 
       // remove all existing either way
       this.selected = [];
 
       // do the opposite here
       if (!allSelected) {
-        this.selected.push(...this._internalRows.slice(first, last));
+        this.selected.push(...selectableRows);
       }
     } else {
       let relevantRows;
@@ -1242,12 +1283,18 @@ export class DatatableComponent<TRow = any>
         relevantRows = this.rows;
       }
       // before we splice, chk if we currently have all selected
-      const allSelected = this.selected.length === relevantRows.length;
+      let selectableRows = relevantRows;
+      if (this.displayCheck) {
+        const checkable = this._internalColumns.filter(c => c.checkboxable);
+        selectableRows = selectableRows.filter(r => checkable.find(c => this.displayCheck(r, c)));
+      }
+      const allSelected = this.selected.length === selectableRows.length;
+
       // remove all existing either way
       this.selected = [];
       // do the opposite here
       if (!allSelected) {
-        this.selected.push(...relevantRows);
+        this.selected.push(...selectableRows);
       }
     }
 
